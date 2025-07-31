@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Book Donation</title>
+</head>
+<body>
+<%- include('partials/navbar') %>
+<div class="container">
+  <div class="row">
+    <% books.forEach(book => { %>
+      <div class="col-md-4 mb-3">
+        <div class="card h-100">
+          <% if (book.image) { %>
+            <img src="<%= book.image %>" class="card-img-top" style="height:250px;object-fit:cover;">
+          <% } else { %>
+            <img src="https://via.placeholder.com/250x250?text=No+Image" class="card-img-top">
+          <% } %>
+          <div class="card-body">
+            <h5 class="card-title"><%= book.title %></h5>
+            <p class="card-text">ผู้แต่ง: <%= book.author %></p>
+            <p class="card-text">หมวดหมู่: <%= book.category %></p>
+            <p class="card-text">คงเหลือ: <%= book.stock %> เล่ม</p>
+            <% if (user) { %>
+              <form method="POST" action="/request-donation">
+                <input type="hidden" name="book_id" value="<%= book.id %>">
+                <button class="btn btn-success w-100">ขอบริจาค</button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+</body>
+</html>

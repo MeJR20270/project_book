@@ -1,0 +1,27 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">Book Donation</a>
+    <form class="d-flex" method="GET" action="/search">
+      <input class="form-control me-2" type="search" name="query" placeholder="ค้นหาหนังสือ" aria-label="Search">
+      <button class="btn btn-outline-light" type="submit">ค้นหา</button>
+    </form>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto ms-3">
+        <% if (user) { %>
+          <li class="nav-item"><a class="nav-link" href="/my-requests">ติดตามคำขอของฉัน</a></li>
+          <% if (user.role === 'admin') { %>
+            <li class="nav-item"><a class="nav-link" href="/admin">เพิ่มหนังสือ</a></li>
+            <li class="nav-item"><a class="nav-link" href="/admin/requests">จัดการคำขอ</a></li>
+          <% } %>
+        <% } %>
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <% if (user) { %>
+          <li class="nav-item"><a class="nav-link" href="/logout">ออกจากระบบ</a></li>
+        <% } else { %>
+          <li class="nav-item"><a class="nav-link" href="/login">เข้าสู่ระบบ</a></li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</nav>
