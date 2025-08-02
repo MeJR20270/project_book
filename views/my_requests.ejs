@@ -23,7 +23,7 @@
       <% } else { %>
         <% requests.forEach(r => { %>
           <tr>
-            <td><%= r.title %></td>
+            <td><img src="<%= r.image_url %>" class="card-img-top" style="height:150px;width: 120px;"> <%= r.title %></td>
             <td><%= r.status %></td>
           </tr>
         <% }) %>

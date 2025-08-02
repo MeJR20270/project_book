@@ -11,8 +11,8 @@
     <% books.forEach(book => { %>
       <div class="col-md-4 mb-3">
         <div class="card h-100">
-          <% if (book.image) { %>
-            <img src="<%= book.image %>" class="card-img-top" style="height:250px;object-fit:cover;">
+          <% if (book.image_url) { %>
+            <img src="<%= book.image_url %>" class="card-img-top" style="height:250px;object-fit:cover;">
           <% } else { %>
             <img src="https://via.placeholder.com/250x250?text=No+Image" class="card-img-top">
           <% } %>
@@ -33,5 +33,6 @@
     <% }) %>
   </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

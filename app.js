@@ -93,7 +93,7 @@ app.post("/request-donation", isLoggedIn, (req, res) => {
 
 // User: View my donation requests
 app.get("/my-requests", isLoggedIn, (req, res) => {
-  db.query(`SELECT dr.id, b.title, dr.status
+  db.query(`SELECT dr.id, b.title, dr.status , b.image_url
             FROM donation_requests dr
             JOIN books b ON dr.book_id = b.id
             WHERE dr.user_id = ?`,
@@ -134,10 +134,9 @@ app.get("/admin", isLoggedIn, (req, res) => {
 
 app.post("/admin/add-book", isLoggedIn, upload.single("image"), (req, res) => {
   if (req.session.user.role !== 'admin') return res.send("Access Denied");
-  const { title, author, category, stock } = req.body;
-  const image = req.file ? "/uploads/" + req.file.filename : null;
-  db.query("INSERT INTO books (title, author, category, stock, image) VALUES (?, ?, ?, ?, ?)",
-    [title, author, category, stock, image], err => {
+  const { title, author, category, stock, image_url } = req.body;
+  db.query("INSERT INTO books (title, author, category, stock, image_url) VALUES (?, ?, ?, ?, ?)",
+    [title, author, category, stock, image_url], err => {
       if (err) throw err;
       res.redirect("/");
     });

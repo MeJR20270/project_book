@@ -9,6 +9,12 @@
       <ul class="navbar-nav me-auto ms-3">
         <% if (user) { %>
           <li class="nav-item"><a class="nav-link" href="/my-requests">ติดตามคำขอของฉัน</a></li>
+          
+          <!-- ปุ่มบริจาคหนังสือที่เปิด modal -->
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#donationModal">บริจาคหนังสือ</a>
+          </li>
+
           <% if (user.role === 'admin') { %>
             <li class="nav-item"><a class="nav-link" href="/admin">เพิ่มหนังสือ</a></li>
             <li class="nav-item"><a class="nav-link" href="/admin/requests">จัดการคำขอ</a></li>
@@ -25,3 +31,21 @@
     </div>
   </div>
 </nav>
+
+<!-- ✅ Modal ป็อปอัพแสดงจุดรับบริจาค -->
+<div class="modal fade" id="donationModal" tabindex="-1" aria-labelledby="donationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="donationModalLabel">บริจาคหนังสือ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button>
+      </div>
+      <div class="modal-body">
+        บริจาคทางไปรษณีย์ โดยจ่าหน้าซอง ตามที่อยู่ดังนี้<br> ชื่อผู้บริจาค…<br> ที่อยู่…<br> กรุณาส่ง มหาวิทยาลัยบูรพา Saen Suk, Chon Buri District, Chon Buri 20131
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+      </div>
+    </div>
+  </div>
+</div>
