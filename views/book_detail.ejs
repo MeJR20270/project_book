@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= book.title %> - รายละเอียดหนังสือ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<%- include('partials/navbar') %>
+
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-4">
+      <% if (book.image_url) { %>
+        <img src="<%= book.image_url %>" class="img-fluid rounded shadow">
+      <% } else { %>
+        <img src="https://via.placeholder.com/250x250?text=No+Image" class="img-fluid rounded shadow">
+      <% } %>
+    </div>
+    <div class="col-md-8">
+      <h2><%= book.title %></h2>
+      <p><strong>ผู้แต่ง:</strong> <%= book.author %></p>
+      <p><strong>หมวดหมู่:</strong> <%= book.category %></p>
+      <p><strong>จำนวนคงเหลือ:</strong> <%= book.stock %> เล่ม</p>
+      <p><strong>คำอธิบาย:</strong> <%= book.description || "ไม่มีคำอธิบาย" %></p>
+
+      <% if (user) { %>
+        <form method="POST" action="/request-donation">
+          <input type="hidden" name="book_id" value="<%= book.id %>">
+          <button class="btn btn-success mt-3">ขอบริจาคหนังสือเล่มนี้</button>
+        </form>
+      <% } else { %>
+        <a href="/login" class="btn btn-primary mt-3">เข้าสู่ระบบเพื่อขอบริจาค</a>
+      <% } %>
+    </div>
+  </div>
+</div>
+</body>
+</html>

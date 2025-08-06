@@ -91,17 +91,20 @@ app.post("/request-donation", isLoggedIn, (req, res) => {
     });
 });
 
-// User: View my donation requests
 app.get("/my-requests", isLoggedIn, (req, res) => {
-  db.query(`SELECT dr.id, b.title, dr.status , b.image_url
-            FROM donation_requests dr
-            JOIN books b ON dr.book_id = b.id
-            WHERE dr.user_id = ?`,
-    [req.session.user.id], (err, results) => {
+  db.query(
+    `SELECT dr.id, b.title, dr.status, dr.confirmed
+     FROM donation_requests dr
+     JOIN books b ON dr.book_id = b.id
+     WHERE dr.user_id = ?`,
+    [req.session.user.id],
+    (err, results) => {
       if (err) throw err;
       res.render("my_requests", { requests: results });
-    });
+    }
+  );
 });
+
 
 // Admin: Manage all donation requests
 app.get("/admin/requests", isLoggedIn, (req, res) => {
@@ -134,12 +137,12 @@ app.get("/admin", isLoggedIn, (req, res) => {
 
 app.post("/admin/add-book", isLoggedIn, upload.single("image"), (req, res) => {
   if (req.session.user.role !== 'admin') return res.send("Access Denied");
-  const { title, author, category, stock, image_url } = req.body;
-  db.query("INSERT INTO books (title, author, category, stock, image_url) VALUES (?, ?, ?, ?, ?)",
-    [title, author, category, stock, image_url], err => {
-      if (err) throw err;
-      res.redirect("/");
-    });
+  const { title, author, category, stock, image_url, description } = req.body;
+db.query("INSERT INTO books (title, author, category, stock, image_url, description) VALUES (?, ?, ?, ?, ?, ?)",
+  [title, author, category, stock, image_url, description], err => {
+    if (err) throw err;
+    res.redirect("/");
+  });
 });
 
 // Search
@@ -159,5 +162,29 @@ app.get("/search", (req, res) => {
     res.render("index", { books: results });
   });
 });
+
+// View book detail
+app.get("/book/:id", (req, res) => {
+  const bookId = req.params.id;
+  db.query("SELECT * FROM books WHERE id = ?", [bookId], (err, results) => {
+    if (err) throw err;
+    if (results.length === 0) return res.send("ไม่พบหนังสือที่ต้องการ");
+    res.render("book_detail", { book: results[0] });
+  });
+});
+
+// User: Confirm receipt
+app.post("/confirm-receipt", isLoggedIn, (req, res) => {
+  const { request_id } = req.body;
+  db.query(
+    "UPDATE donation_requests SET confirmed = 1 WHERE id = ? AND user_id = ?",
+    [request_id, req.session.user.id],
+    err => {
+      if (err) throw err;
+      res.redirect("/my-requests");
+    }
+  );
+});
+
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

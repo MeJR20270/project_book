@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
   <title>คำขอบริจาคของฉัน</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <%- include('partials/navbar') %>
+
 <div class="container mt-4">
   <h2>คำขอบริจาคของฉัน</h2>
   <table class="table table-bordered table-striped">
@@ -13,23 +15,39 @@
       <tr>
         <th>หนังสือ</th>
         <th>สถานะ</th>
+        <th>การยืนยันการรับ</th>
       </tr>
     </thead>
     <tbody>
       <% if (requests.length === 0) { %>
         <tr>
-          <td colspan="2" class="text-center">ยังไม่มีคำขอบริจาค</td>
+          <td colspan="3" class="text-center">ยังไม่มีคำขอบริจาค</td>
         </tr>
       <% } else { %>
         <% requests.forEach(r => { %>
           <tr>
-            <td><img src="<%= r.image_url %>" class="card-img-top" style="height:150px;width: 120px;"> <%= r.title %></td>
+            <td><%= r.title %></td>
             <td><%= r.status %></td>
+            <td>
+              <% if (r.status === "จัดส่งสำเร็จ") { %>
+                <% if (r.confirmed === 1) { %>
+                  <span class="badge bg-success">ยืนยันแล้ว</span>
+                <% } else { %>
+                  <form method="POST" action="/confirm-receipt">
+                    <input type="hidden" name="request_id" value="<%= r.id %>">
+                    <button class="btn btn-sm btn-primary">ยืนยันการรับ</button>
+                  </form>
+                <% } %>
+              <% } else { %>
+                -
+              <% } %>
+            </td>
           </tr>
         <% }) %>
       <% } %>
     </tbody>
   </table>
 </div>
+
 </body>
 </html>
