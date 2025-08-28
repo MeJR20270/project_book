@@ -5,6 +5,7 @@ const session = require("express-session");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const multer = require("multer");
+const bcrypt = require("bcrypt");
 const path = require("path");
 const app = express();
 const PORT = 3000;
@@ -64,21 +65,69 @@ app.get("/", (req, res) => {
   });
 });
 
-// Login / Logout
-app.get("/login", (req, res) => res.render("login"));
+// หน้า Login
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+// เข้าสู่ระบบ
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
-  db.query("SELECT * FROM users WHERE username = ? AND password = ?", [username, password], (err, results) => {
-    if (results.length > 0) {
-      req.session.user = results[0];
-      res.redirect("/");
-    } else res.send("Invalid login");
+
+  db.query("SELECT * FROM users WHERE username = ?", [username], async (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.send("Error: " + err.message);
+    }
+
+    if (results.length === 0) {
+      return res.send("ไม่พบบัญชีผู้ใช้");
+    }
+
+    const user = results[0];
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res.send("รหัสผ่านไม่ถูกต้อง");
+    }
+
+    req.session.user = user;
+    res.redirect("/");
   });
 });
 
 app.get("/logout", (req, res) => {
   req.session.destroy();
   res.redirect("/");
+});
+
+// หน้า Register
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+// สมัครสมาชิก
+app.post("/register", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    db.query(
+      "INSERT INTO users (username, password) VALUES (?, ?)",
+      [username, hashedPassword],
+      (err, result) => {
+        if (err) {
+          console.error(err);
+          return res.send("Error: " + err.message);
+        }
+        res.redirect("/login");
+      }
+    );
+  } catch (err) {
+    console.error(err);
+    res.send("เกิดข้อผิดพลาด");
+  }
 });
 
 // Request donation
