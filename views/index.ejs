@@ -23,9 +23,8 @@
             <p class="card-text">หมวดหมู่: <%= book.category %></p>
             <p class="card-text">คงเหลือ: <%= book.stock %> เล่ม</p>
             <% if (user) { %>
-              <form method="POST" action="/request-donation">
-                <input type="hidden" name="book_id" value="<%= book.id %>">
-                <button class="btn btn-success w-100">ขอบริจาค</button>
+              <form method="GET" action="/request-donation/<%= book.id %>">
+                <button class="btn btn-success mt-3">ขอบริจาคหนังสือเล่มนี้</button>
               </form>
             <% } %>
           </div>

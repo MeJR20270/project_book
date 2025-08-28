@@ -24,8 +24,7 @@
       <p><strong>คำอธิบาย:</strong> <%= book.description || "ไม่มีคำอธิบาย" %></p>
 
       <% if (user) { %>
-        <form method="POST" action="/request-donation">
-          <input type="hidden" name="book_id" value="<%= book.id %>">
+        <form method="GET" action="/request-donation/<%= book.id %>">
           <button class="btn btn-success mt-3">ขอบริจาคหนังสือเล่มนี้</button>
         </form>
       <% } else { %>

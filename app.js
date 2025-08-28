@@ -235,5 +235,49 @@ app.post("/confirm-receipt", isLoggedIn, (req, res) => {
   );
 });
 
+// แสดงฟอร์มขอบริจาค
+app.get("/request-donation/:bookId", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const bookId = req.params.bookId;
+  db.query("SELECT * FROM books WHERE id = ?", [bookId], (err, results) => {
+    if (err) {
+      console.error("DB ERROR:", err);
+      return res.status(500).send("เกิดข้อผิดพลาด");
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send("ไม่พบบุ๊คนี้");
+    }
+
+    res.render("request_form", { user: req.session.user, book: results[0] });
+  });
+});
+
+// บันทึกคำขอบริจาค
+app.post("/request-donation/:bookId", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+
+  const bookId = req.params.bookId;
+  const { fullname, address, phone } = req.body;
+
+  db.query(
+    "INSERT INTO donation_requests (user_id, book_id, fullname, address, phone) VALUES (?, ?, ?, ?, ?)",
+    [req.session.user.id, bookId, fullname, address, phone],
+    (err, result) => {
+      if (err) {
+        console.error("DB ERROR:", err);
+        return res.status(500).send("บันทึกไม่สำเร็จ");
+      }
+
+      res.redirect("/my-requests");
+    }
+  );
+});
+
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
