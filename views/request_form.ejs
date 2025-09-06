@@ -9,33 +9,37 @@
 <%- include('partials/navbar', { user: user }) %>
 
 <div class="container mt-4">
-  <h2>แบบฟอร์มขอบริจาค</h2>
-
   <div class="card mt-3">
     <div class="card-body">
       <h4><%= book.title %></h4>
       <p>ผู้เขียน: <%= book.author %></p>
-      <img src="<%= book.image_url %>" alt="Book Image" class="img-fluid mb-3" style="max-width:200px;">
+      <div class="row">
+        <img src="<%= book.image_url %>" alt="Book Image" class="img-fluid mb-3 col-6" style="max-width:200px;">
+        <div class="col-6 offset-3">
 
-      <form method="POST" action="/request-donation/<%= book.id %>">
-        <div class="mb-3">
-          <label class="form-label">ชื่อ-นามสกุล</label>
-          <input type="text" name="fullname" class="form-control" required>
+          <form method="POST" action="/request-donation/<%= book.id %>">
+            <div class="mb-3">
+              <label class="form-label">ชื่อ-นามสกุล</label>
+              <input type="text" name="fullname" class="form-control" required>
+            </div>
+    
+            <div class="mb-3">
+              <label class="form-label">ที่อยู่</label>
+              <textarea name="address" class="form-control" required></textarea>
+            </div>
+    
+            <div class="mb-3">
+              <label class="form-label">เบอร์โทร</label>
+              <input type="text" name="phone" class="form-control" required>
+            </div>
+    
+            <button type="submit" class="btn btn-success">ยืนยันการขอรับบริจาค</button>
+            <a href="/book/<%= book.id %>" class="btn btn-secondary">ยกเลิก</a>
+          </form>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">ที่อยู่</label>
-          <textarea name="address" class="form-control" required></textarea>
-        </div>
+      </div>
 
-        <div class="mb-3">
-          <label class="form-label">เบอร์โทร</label>
-          <input type="text" name="phone" class="form-control" required>
-        </div>
-
-        <button type="submit" class="btn btn-success">ยืนยันการขอรับบริจาค</button>
-        <a href="/books/<%= book.id %>" class="btn btn-secondary">ยกเลิก</a>
-      </form>
     </div>
   </div>
 </div>

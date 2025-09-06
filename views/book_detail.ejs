@@ -9,14 +9,14 @@
 
 <div class="container mt-4">
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6 d-flex justify-content-center">
       <% if (book.image_url) { %>
         <img src="<%= book.image_url %>" class="img-fluid rounded shadow">
       <% } else { %>
         <img src="https://via.placeholder.com/250x250?text=No+Image" class="img-fluid rounded shadow">
       <% } %>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-6">
       <h2><%= book.title %></h2>
       <p><strong>ผู้แต่ง:</strong> <%= book.author %></p>
       <p><strong>หมวดหมู่:</strong> <%= book.category %></p>

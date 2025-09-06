@@ -26,7 +26,7 @@
       <% } else { %>
         <% requests.forEach(r => { %>
           <tr>
-            <td><%= r.title %></td>
+            <td><img src="<%= r.image_url %>" class="card-img-top" style="height:50px;width:50px;">  <%= r.title %></td>
             <td><%= r.status %></td>
             <td>
               <% if (r.status === "จัดส่งสำเร็จ") { %>

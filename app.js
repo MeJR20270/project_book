@@ -142,7 +142,7 @@ app.post("/request-donation", isLoggedIn, (req, res) => {
 
 app.get("/my-requests", isLoggedIn, (req, res) => {
   db.query(
-    `SELECT dr.id, b.title, dr.status, dr.confirmed
+    `SELECT dr.id, b.title, dr.status, dr.confirmed, b.image_url
      FROM donation_requests dr
      JOIN books b ON dr.book_id = b.id
      WHERE dr.user_id = ?`,
@@ -256,7 +256,7 @@ app.get("/request-donation/:bookId", (req, res) => {
   });
 });
 
-// บันทึกคำขอบริจาค
+// POST: ขอรับบริจาคหนังสือ + เช็กสต็อกก่อน
 app.post("/request-donation/:bookId", (req, res) => {
   if (!req.session.user) {
     return res.redirect("/login");
@@ -265,19 +265,51 @@ app.post("/request-donation/:bookId", (req, res) => {
   const bookId = req.params.bookId;
   const { fullname, address, phone } = req.body;
 
-  db.query(
-    "INSERT INTO donation_requests (user_id, book_id, fullname, address, phone) VALUES (?, ?, ?, ?, ?)",
-    [req.session.user.id, bookId, fullname, address, phone],
-    (err, result) => {
-      if (err) {
-        console.error("DB ERROR:", err);
-        return res.status(500).send("บันทึกไม่สำเร็จ");
-      }
-
-      res.redirect("/my-requests");
+  // 1. เช็ก stock ก่อน
+  db.query("SELECT stock FROM books WHERE id = ?", [bookId], (err, rows) => {
+    if (err) {
+      console.error("DB ERROR select stock:", err);
+      return res.status(500).send("เกิดข้อผิดพลาด");
     }
-  );
+    if (rows.length === 0) {
+      return res.status(404).send("ไม่พบหนังสือ");
+    }
+
+    const stock = rows[0].stock;
+    if (stock <= 0) {
+      // ไม่มี stock แล้ว
+      return res.send("หนังสือเล่มนี้หมดแล้ว ไม่สามารถขอบริจาคได้");
+    }
+
+    // 2. insert คำขอบริจาค
+    db.query(
+      "INSERT INTO donation_requests (user_id, book_id, fullname, address, phone) VALUES (?, ?, ?, ?, ?)",
+      [req.session.user.id, bookId, fullname, address, phone],
+      (errInsert, resultInsert) => {
+        if (errInsert) {
+          console.error("DB ERROR insert:", errInsert);
+          return res.status(500).send("บันทึกไม่สำเร็จ");
+        }
+
+        // 3. update ลด stock
+        db.query(
+          "UPDATE books SET stock = stock - 1 WHERE id = ?",
+          [bookId],
+          (errUpdate, resultUpdate) => {
+            if (errUpdate) {
+              console.error("DB ERROR update stock:", errUpdate);
+              return res.status(500).send("ลด stock ไม่สำเร็จ");
+            }
+
+            // 4. กลับไปหน้า my-requests
+            res.redirect("/my-requests");
+          }
+        );
+      }
+    );
+  });
 });
+
 
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
